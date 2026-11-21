@@ -1,6 +1,6 @@
 config ZMK_PROSPECTOR_SCANNER_ORIGINAL
     bool "Prospector scanner themes on MS2 / MS18 / MS18T"
-    depends on ($(shields_list_contains,prospector_ms2) || $(shields_list_contains,prospector_ms18) || $(shields_list_contains,prospector_ms18t)) && ZMK_DISPLAY
+    depends on ZMK_DISPLAY && BT_OBSERVER && !ZMK_SPLIT && !ZMK_BLE
     help
       Restore the original scanner renderers on supported kblade shields using its existing
       local-state bridge. This does not turn the USB dongle into a BLE scanner.

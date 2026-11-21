@@ -15,7 +15,7 @@ second remote prospector-zmk-module project to this workspace: that would duplic
 board/module registration.
 
 The normal Zephyr/ZMK/SDK dependencies remain external; this snapshot replaces the
-hardware project only. The source commit above is provenance, not a build fetch.
+hardware project only. The source commits above are provenance, not build fetches.
 
 Local MS18T adaptation: the upstream MS18T shield currently disables/removes the
 CST816S node. This kl-touch branch restores it using I2C SDA P0.04, SCL P0.05,
