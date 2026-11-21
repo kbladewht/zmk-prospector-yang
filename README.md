@@ -113,8 +113,8 @@ DYA `display_theme=4` 选择新主题，原有 0–3 的含义保持不变。
 无需手动在父目录建立 workspace；脚本固定使用
 `D:/project/GitHub/.kl-touch-workspace`。此脚本构建 kblade MS18T 的
 `prospector_ms18t scanner_display`，启用 `ms18-touch.conf` 中的触摸配置；
-脚本不刷写设备。固件输出为 workspace 下的
-`build-ms18t-scanner/zephyr/zmk.uf2`。触摸配置目前仍需实机验证。
+固件输出为 workspace 下的 `build-ms18t-scanner/zephyr/zmk.uf2`。脚本会保存副本到
+Downloads，并等待 bootloader 磁盘后将 UF2 复制到设备；触摸配置仍需实机验证。
 MS18 与 MS18T 的触摸说明分别见 [MS18](docs/MS18-TOUCH.md) 和
 [MS18T](docs/MS18T-TOUCH.md)。
 
