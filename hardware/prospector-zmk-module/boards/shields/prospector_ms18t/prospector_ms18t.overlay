@@ -143,7 +143,7 @@
 /* ========== I2C Bus ========== */
 
 /*
- * I2C0 configuration for touch sensor (CST816S) and light sensor (APDS9960).
+ * I2C0 configuration for the CST816S touch sensor.
  * This MUST be in the shield overlay (not board-level boards/*.overlay)
  * because I2C0 shares hardware peripheral 0x40003000 with SPI0 on nRF52840.
  * Keyboards using SPI0 (e.g. PAW3222 trackball) would conflict if I2C0
@@ -182,13 +182,32 @@
         rst-gpios = <&gpio0 2 GPIO_ACTIVE_LOW>; /* P0.02 / TP-RET */
     };
 
-    /* APDS9960 Light/Gesture Sensor (Step 5c - for auto-brightness) */
-    /* NOTE: INT not physically connected, using unused internal GPIO P0.09 */
-    /* P0.09 is NFC1 pin, not exposed on XIAO but available as GPIO */
-    apds9960: apds9960@39 {
-        compatible = "avago,apds9960";
-        reg = <0x39>;
-        status = "disabled";
-        int-gpios = <&gpio1 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+};
+
+/* APDS9960 ambient-light sensor uses a separate, polled I2C bus.
+ * P0.26 is SDA and P0.31 is SCL; no interrupt pin is required.
+ */
+&pinctrl {
+    i2c1_ambient_default: i2c1_ambient_default {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 26)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 31)>;
+        };
     };
+
+    i2c1_ambient_sleep: i2c1_ambient_sleep {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 26)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 31)>;
+            low-power-enable;
+        };
+    };
+};
+
+&i2c1 {
+    status = "okay";
+    pinctrl-0 = <&i2c1_ambient_default>;
+    pinctrl-1 = <&i2c1_ambient_sleep>;
+    pinctrl-names = "default", "sleep";
+    clock-frequency = <100000>;
 };

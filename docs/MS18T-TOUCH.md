@@ -17,6 +17,18 @@ The CST816T uses Zephyr's CST816-family driver (`hynitron,cst816s`) at I2C
 address `0x15`. TP-RET is wired to the controller reset pin. Display wiring
 uses the MS18T shield overlay.
 
+APDS9960 ambient-light sensor wiring:
+
+| Signal | MCU pin |
+|---|---|
+| SDA | P0.26 |
+| SCL | P0.31 |
+
+The APDS9960 uses a separate I2C1 bus from the touch controller and is polled
+without an interrupt pin. Automatic brightness starts when a sensor is detected;
+dragging the brightness slider switches to manual mode until the next reboot.
+The sensor requires 3.3 V, GND, and I2C pull-ups (often present on the breakout).
+
 On the theme page, swipe down/up for next/previous theme (all twelve wrap).
 Double tap cycles palette on FIELD/OPERATOR/RADII. Swipe right opens a compact
 navigation page; swipe down opens brightness settings. Drag the slider to set
@@ -31,8 +43,9 @@ mapping: 1% is dim and 100% is full brightness.
 Touch and DYA share setting values; changes are saved after two seconds of inactivity.
 
 Build with `bash scripts/build-ms18-scanner.sh /path/to/west-workspace`, or run
-the manual Actions workflow on `kl-touch`. No automatic flashing.
+the manual Actions workflow on `kl-touch`; these only build. `touch.sh` also
+waits for the bootloader disk and copies the UF2 to it.
 
 Host validation covered 288 layout states with zero unsafe, clipped, or overlapping
 rectangles; receiver tests passed. Firmware compilation with this pin mapping
-succeeded. Physical touch behavior still needs device testing.
+succeeded. Physical touch and APDS9960 behavior still need device testing.

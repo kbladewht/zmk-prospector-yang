@@ -434,12 +434,15 @@ config PROSPECTOR_USE_AMBIENT_LIGHT_SENSOR
       Note: This uses direct I2C communication, not the Zephyr APDS9960 driver.
       This allows 4-pin connections without an interrupt pin.
 
-      Hardware connection (when enabled):
-      - SDA = D4 (P0.04)
-      - SCL = D5 (P0.05)
-      - VCC = 3.3V, GND = GND
+      I2C pins are selected by the shield device-tree overlay.
 
-      User-friendly: Only this one setting needs to be changed!
+config PROSPECTOR_AMBIENT_LIGHT_I2C1
+    bool "Use I2C1 for the ambient light sensor"
+    default n
+    depends on PROSPECTOR_USE_AMBIENT_LIGHT_SENSOR
+    help
+      Use I2C1 instead of I2C0 for the APDS9960 polling driver.
+      Enable this when the sensor uses a separate I2C bus.
 
 config PROSPECTOR_ALS_MIN_BRIGHTNESS
     int "Minimum brightness percentage"

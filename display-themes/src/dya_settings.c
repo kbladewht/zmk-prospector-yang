@@ -5,6 +5,8 @@
 #include <lvgl.h>
 #include <string.h>
 #include <zephyr/sys/atomic.h>
+#include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
 #include <cormoran/zmk/custom_settings.h>
 #include <zmk/studio/custom.h>
 #include <zmk/event_manager.h>
@@ -16,7 +18,9 @@
 #include <zephyr/drivers/led.h>
 #include "dya_settings.h"
 #include "backlight_init.h"
+#include "brightness_control.h"
 #define SUBSYSTEM "dongle_display_settings"
+LOG_MODULE_REGISTER(dya_settings, CONFIG_ZMK_LOG_LEVEL);
 static struct zmk_rpc_custom_subsystem_meta display_meta = {
     ZMK_RPC_CUSTOM_SUBSYSTEM_UI_URLS(),
     .security = ZMK_STUDIO_RPC_HANDLER_UNSECURED,
@@ -45,8 +49,47 @@ static int32_t read_value(const struct zmk_custom_setting *setting, int32_t fall
     zmk_custom_setting_get_int32(setting, &value);
     return value;
 }
+
+#if IS_ENABLED(CONFIG_PROSPECTOR_USE_AMBIENT_LIGHT_SENSOR)
+static bool auto_brightness_enabled = true;
+static uint32_t last_ambient_read_ms;
+
+static void update_ambient_brightness(void) {
+    if (!auto_brightness_enabled || !brightness_control_sensor_available()) return;
+
+    uint32_t now = k_uptime_get_32();
+    if ((uint32_t)(now - last_ambient_read_ms) <
+        CONFIG_PROSPECTOR_ALS_UPDATE_INTERVAL_MS) return;
+    last_ambient_read_ms = now;
+
+    uint16_t light_value;
+    int ret = brightness_control_read_sensor(&light_value);
+    if (ret == -EAGAIN) return;
+    if (ret < 0) {
+        LOG_WRN("Ambient light read failed: %d", ret);
+        return;
+    }
+
+    uint8_t brightness = brightness_control_map_light_to_brightness(light_value);
+    int32_t current = read_value(&display_brightness, 60);
+    int32_t difference = brightness - current;
+    if (difference > -2 && difference < 2) return;
+
+    ret = zmk_custom_setting_set_int32(
+        &display_brightness, brightness, ZMK_CUSTOM_SETTING_WRITE_MODE_MEMORY);
+    if (ret != 0) {
+        LOG_WRN("Could not apply ambient brightness: %d", ret);
+        return;
+    }
+    atomic_set(&dirty, 1);
+}
+#else
+static void update_ambient_brightness(void) {}
+#endif
+
 static void apply(lv_timer_t *timer) {
     ARG_UNUSED(timer);
+    update_ambient_brightness();
     if (!atomic_cas(&dirty, 1, 0)) return;
     int32_t theme = read_value(&display_theme, 0);
     int32_t palette = read_value(&display_palette, 0);
@@ -105,7 +148,6 @@ int prospector_dya_scanner_keyboard(void) {
 #if IS_ENABLED(CONFIG_ZMK_PROSPECTOR_TOUCH_GESTURES)
 /* LVGL timer caller: use the same values as USB/DYA. Save on the system
  * work queue after a pause, rather than writing flash on the display thread. */
-#include <zephyr/kernel.h>
 static void save_touch(struct k_work *work) {
     ARG_UNUSED(work);
     zmk_custom_setting_save(&display_theme);
@@ -126,6 +168,9 @@ int prospector_dya_gesture(int theme_step, int brightness_step) {
 }
 int prospector_dya_touch_get_brightness(void) { return read_value(&display_brightness, 60); }
 void prospector_dya_touch_brightness(int value) {
+#if IS_ENABLED(CONFIG_PROSPECTOR_USE_AMBIENT_LIGHT_SENSOR)
+    auto_brightness_enabled = false;
+#endif
     prospector_dya_gesture(0, value - read_value(&display_brightness, 60));
 }
 void prospector_dya_touch_palette(void) {

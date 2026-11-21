@@ -238,7 +238,9 @@ static int brightness_control_init(void) {
 
     // Get I2C device (from device tree)
     i2c_dev = NULL;
-#if DT_NODE_HAS_STATUS(DT_NODELABEL(i2c0), okay)
+#if IS_ENABLED(CONFIG_PROSPECTOR_AMBIENT_LIGHT_I2C1)
+    i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c1));
+#elif DT_NODE_HAS_STATUS(DT_NODELABEL(i2c0), okay)
     i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c0));
 #endif
 
