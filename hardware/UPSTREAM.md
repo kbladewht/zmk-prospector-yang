@@ -18,8 +18,8 @@ The normal Zephyr/ZMK/SDK dependencies remain external; this snapshot replaces t
 hardware project only. The source commits above are provenance, not build fetches.
 
 Local MS18T adaptation: the upstream MS18T shield currently disables/removes the
-CST816S node. This kl-touch branch restores it using I2C SDA P0.04, SCL P0.05,
-TP_IRQ P1.11 (D0), and TP_RST P0.03 (D1), matching the MS18T connector mapping.
+CST816S node. This kl-touch branch restores it using TP-INT P0.29, TP-SDA P1.15,
+TP-SCL P1.13, and TP-RET P0.02.
 
 Local adaptation: when DYA display settings are enabled, its brightness is the
 single owner. The stock screen no longer applies its NVS manual brightness,

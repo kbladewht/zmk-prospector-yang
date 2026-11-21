@@ -8,10 +8,10 @@ MS18T touch wiring:
 
 | Signal | MCU pin |
 |---|---|
-| TP_SCL | P0.05 |
-| TP_SDA | P0.04 |
-| TP_RST | P0.03 (D1) |
-| TP_INT | P1.11 (D0) |
+| TP-INT | P0.29 |
+| TP-SDA | P1.15 |
+| TP-SCL | P1.13 |
+| TP-RET | P0.02 |
 
 The CST816T uses Zephyr's CST816-family driver (`hynitron,cst816s`) at I2C
 address `0x15`. Display wiring uses the MS18T shield overlay.
