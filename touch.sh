@@ -13,10 +13,11 @@ export ZEPHYR_SDK_INSTALL_DIR="D:/zephyr-sdk-0.16.9"
 set -euo pipefail
 
 repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-workspace=
+detected_workspace=
 if command -v west >/dev/null 2>&1; then
-  workspace=$(cd -- "$repo" && west topdir 2>/dev/null) || workspace=
+  detected_workspace=$(cd -- "$repo" && west topdir 2>/dev/null) || detected_workspace=
 fi
+workspace=
 dry_run=false
 update_only=false
 
@@ -59,7 +60,7 @@ if ! command -v west >/dev/null 2>&1; then
 fi
 
 if [[ -z $workspace ]]; then
-  workspace=${ZMK_TOUCH_WORKSPACE:-"$(dirname -- "$repo")/.kl-touch-workspace"}
+  workspace=${ZMK_TOUCH_WORKSPACE:-${detected_workspace:-"$(dirname -- "$repo")/.kl-touch-workspace"}}
 fi
 workspace=$(mkdir -p -- "$workspace" && cd -- "$workspace" && pwd)
 

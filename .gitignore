@@ -8,3 +8,11 @@ outputs/twelve-theme-validation/
 /build
 /modules
 /zephyr
+zmk-module-settings-rpc/
+zmk-module-runtime-input-processor/
+zmk-module-ble-management/
+zmk-module-battery-history/
+zmk-feature-runtime-combo/
+zmk-feature-device-info/
+zmk-feature-custom-settings/
+zmk-behavior-runtime-sensor-rotate/
