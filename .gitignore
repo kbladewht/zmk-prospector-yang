@@ -16,3 +16,7 @@ zmk-feature-runtime-combo/
 zmk-feature-device-info/
 zmk-feature-custom-settings/
 zmk-behavior-runtime-sensor-rotate/
+/optional/modules
+mario-peripheral-animation/
+prospector-zmk-module/
+/zmk

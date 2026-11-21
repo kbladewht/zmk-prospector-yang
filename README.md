@@ -97,15 +97,20 @@ DYA `display_theme=4` 选择新主题，原有 0–3 的含义保持不变。
 ## 构建 kl-touch 触摸屏扫描仪
 
 依赖版本固定在根目录 `west.yml`。安装 west、Zephyr SDK 及 Zephyr 构建依赖后，
-在仓库根目录直接运行：
+首次使用时，在仓库根目录运行一次：
+
+```sh
+./touch-update.sh
+```
+
+该脚本会在仓库旁的 `.kl-touch-workspace` 初始化 west workspace 并下载固定依赖，
+之后需要更新依赖时再运行。日常编译只需运行：
 
 ```sh
 ./touch.sh
 ```
 
-首次运行会自动在仓库旁的 `.kl-touch-workspace` 初始化 west workspace 并下载固定依赖；
-依赖已存在时，`./touch.sh` 不会重复更新，直接编译。不需要手动在父目录建立
-workspace。要手动更新依赖时运行 `./touch-update.sh`；要把依赖放在其他位置，可设置
+无需手动在父目录建立 workspace。要把依赖放在其他位置，可设置
 `ZMK_TOUCH_WORKSPACE`。运行 `./touch.sh --dry-run` 可只预览构建命令。此脚本构建 kblade MS18 的
 `prospector_ms18 scanner_display`，启用 `ms18-touch.conf` 中的触摸配置；
 脚本不刷写设备。固件输出为 workspace 下的
