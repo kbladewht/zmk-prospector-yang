@@ -94,31 +94,24 @@ DYA `display_theme=4` 选择新主题，原有 0–3 的含义保持不变。
 
 ![INDUSTRIAL 主机预览](docs/industrial-modifiers-preview.png)
 
-## 构建
+## 构建 kl-touch 触摸屏扫描仪
 
-依赖与版本在根目录 `west.yml` 固定。需安装 west、Zephyr SDK，并准备一个
-新的 west workspace。示例中仓库目录名为 `zmk-prospector`：
+依赖版本固定在根目录 `west.yml`。安装 west、Zephyr SDK 及 Zephyr 构建依赖后，
+在仓库根目录直接运行：
 
 ```sh
-mkdir ms2-workspace
-cd ms2-workspace
-git clone -b codex/kblade-dya-four-themes https://github.com/S7venYoung/zmk-prospector.git
-west init -l zmk-prospector
-west update
-west zephyr-export
-bash zmk-prospector/scripts/build-ms2-dya.sh "$PWD" --dry-run
-# 确认构建后再运行：
-bash zmk-prospector/scripts/build-ms2-dya.sh "$PWD"
+./touch.sh
 ```
 
-实际构建参数为 `-b kblade//zmk`、`-DSHIELD="prospector_ms2 corne_dongle"`，
-同时启用 `studio-rpc-usb-uart` 和 `zmk-usb-logging` 两个 snippet。
-它们各自声明独立 CDC ACM 节点，DYA RPC 与串口日志分开传输。
-输出位于 `build-ms2-dya/zephyr/`，脚本不刷写设备。
+首次运行会自动在仓库旁的 `.kl-touch-workspace` 初始化 west workspace 并下载固定依赖；
+依赖已存在时，`./touch.sh` 不会重复更新，直接编译。不需要手动在父目录建立
+workspace。要手动更新依赖时运行 `./touch-update.sh`；要把依赖放在其他位置，可设置
+`ZMK_TOUCH_WORKSPACE`。运行 `./touch.sh --dry-run` 可只预览构建命令。此脚本构建 kblade MS18 的
+`prospector_ms18 scanner_display`，启用 `ms18-touch.conf` 中的触摸配置；
+脚本不刷写设备。固件输出为 workspace 下的
+`build-ms18-scanner/zephyr/zmk.uf2`。触摸配置目前仍需实机验证。
 
-GitHub Actions 工作流只接受 **workflow_dispatch**，提交和 PR 不会触发构建。
-依赖从原 kbladewht 核心切换为 DYA 核心，旧固件的 QMK/Vial 扩展不在此配置中。
-标准 ZMK 键位和分体行为需要与实际左右手固件完成连通性验证。
+GitHub Actions 在 `kl-touch` 分支有提交时自动构建，也支持手动运行。
 
 ## 已完成的检查与边界
 

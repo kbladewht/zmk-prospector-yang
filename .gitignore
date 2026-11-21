@@ -5,3 +5,6 @@
 outputs/twelve-theme-validation/
 
 .host-ms18-check/
+/build
+/modules
+/zephyr
