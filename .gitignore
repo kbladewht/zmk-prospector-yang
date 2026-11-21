@@ -18,5 +18,5 @@ zmk-feature-custom-settings/
 zmk-behavior-runtime-sensor-rotate/
 /optional/modules
 mario-peripheral-animation/
-prospector-zmk-module/
+/prospector-zmk-module/
 /zmk

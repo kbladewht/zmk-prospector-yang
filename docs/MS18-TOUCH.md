@@ -1,20 +1,20 @@
-# MS18 twelve-theme touch scanner
+# MS18T twelve-theme touch scanner
 
-Target: `kblade//zmk`, `prospector_ms18 scanner_display`. Standalone BLE observer.
+Target: `kblade//zmk`, `prospector_ms18t scanner_display`. Standalone BLE observer.
 Display: ST7789, 240×280 portrait / 280×240 landscape. Touch: CST816T,
 using Zephyr CST816-family driver (hynitron,cst816s); hardware compatibility remains unverified.
 
-MS18 touch wiring:
+MS18T touch wiring:
 
 | Signal | MCU pin |
 |---|---|
-| TP_SCL | P0.08 |
-| TP_SDA | P0.06 |
-| TP_RST | P0.04 |
-| TP_INT | P0.29 |
+| TP_SCL | P0.05 |
+| TP_SDA | P0.04 |
+| TP_RST | P0.03 (D1) |
+| TP_INT | P1.11 (D0) |
 
 The CST816T uses Zephyr's CST816-family driver (`hynitron,cst816s`) at I2C
-address `0x15`. Display wiring retains the MS18 overlay.
+address `0x15`. Display wiring uses the MS18T shield overlay.
 
 On the theme page, swipe down/up for next/previous theme (all twelve wrap).
 Double tap cycles palette on FIELD/OPERATOR/RADII. Swipe right opens a compact

@@ -14,13 +14,13 @@ else
   repo_cmake=$repo
 fi
 for required in "$workspace/zmk/app/include/zmk/studio/custom.h" \
-    "$module/boards/kblade/board.yml" "$module/boards/shields/prospector_ms18/prospector_ms18.overlay"; do
+    "$module/boards/kblade/board.yml" "$module/boards/shields/prospector_ms18t/prospector_ms18t.overlay"; do
   [[ -f "$required" ]] || { echo "Missing pinned dependency: $required" >&2; exit 1; }
 done
-command=(west build -s "$workspace/zmk/app" -d "$workspace/build-ms18-scanner"
+command=(west build -s "$workspace/zmk/app" -d "$workspace/build-ms18t-scanner"
   -b kblade//zmk -S studio-rpc-usb-uart -S zmk-usb-logging --
   "-DCMAKE_PREFIX_PATH=$workspace/zephyr/share/zephyr-package/cmake"
-  "-DSHIELD=prospector_ms18 scanner_display"
+  "-DSHIELD=prospector_ms18t scanner_display"
   "-DZMK_CONFIG=$repo/config/scanner"
   "-DEXTRA_CONF_FILE=$repo/config/ms18-touch.conf"
   "-DZMK_EXTRA_MODULES=$module_cmake;$repo_cmake")

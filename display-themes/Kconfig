@@ -1,8 +1,8 @@
 config ZMK_PROSPECTOR_SCANNER_ORIGINAL
-    bool "FIELD / OPERATOR / RADII / YADS / INDUSTRIAL / SEGMENT / ORBIT / SPLIT / MONO / TAPE / BLUEPRINT / TERMINAL on ms2"
-    depends on ($(shields_list_contains,prospector_ms2) || $(shields_list_contains,prospector_ms18)) && ZMK_DISPLAY
+    bool "Prospector scanner themes on MS2 / MS18 / MS18T"
+    depends on ($(shields_list_contains,prospector_ms2) || $(shields_list_contains,prospector_ms18) || $(shields_list_contains,prospector_ms18t)) && ZMK_DISPLAY
     help
-      Restore the original scanner renderers on kblade ms2 using its existing
+      Restore the original scanner renderers on supported kblade shields using its existing
       local-state bridge. This does not turn the USB dongle into a BLE scanner.
 
 config ZMK_PROSPECTOR_DYA_SETTINGS

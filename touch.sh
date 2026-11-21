@@ -24,10 +24,10 @@ else
 fi
 
 
-command=(west build -s "$workspace/zmk/app" -d "$workspace/build-ms18-scanner"
+command=(west build -s "$workspace/zmk/app" -d "$workspace/build-ms18t-scanner"
   -b kblade//zmk -S studio-rpc-usb-uart -S zmk-usb-logging --
   "-DCMAKE_PREFIX_PATH=$workspace/zephyr/share/zephyr-package/cmake"
-  "-DSHIELD=prospector_ms18 scanner_display"
+  "-DSHIELD=prospector_ms18t scanner_display"
   "-DZMK_CONFIG=$repo/config/scanner"
   "-DEXTRA_CONF_FILE=$repo/config/ms18-touch.conf"
   "-DZMK_EXTRA_MODULES=$module_cmake;$repo_cmake")
