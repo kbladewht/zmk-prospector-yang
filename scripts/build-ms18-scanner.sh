@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
-if [[ $# -lt 1 || $# -gt 2 || ( $# -eq 2 && $2 != --dry-run ) ]]; then
-  echo "Usage: $0 /path/to/west-workspace [--dry-run]" >&2; exit 2
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $0 /path/to/west-workspace" >&2; exit 2
 fi
 workspace=$(cd -- "$1" && pwd)
 repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
@@ -24,6 +24,5 @@ command=(west build -s "$workspace/zmk/app" -d "$workspace/build-ms18-scanner"
   "-DZMK_CONFIG=$repo/config/scanner"
   "-DEXTRA_CONF_FILE=$repo/config/ms18-touch.conf"
   "-DZMK_EXTRA_MODULES=$module_cmake;$repo_cmake")
-if [[ ${2:-} == --dry-run ]]; then printf '%q ' "${command[@]}";printf '\n';exit 0;fi
 cd -- "$workspace"
 "${command[@]}"

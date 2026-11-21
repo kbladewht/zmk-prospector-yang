@@ -111,8 +111,8 @@ DYA `display_theme=4` 选择新主题，原有 0–3 的含义保持不变。
 ```
 
 无需手动在父目录建立 workspace。要把依赖放在其他位置，可设置
-`ZMK_TOUCH_WORKSPACE`。运行 `./touch.sh --dry-run` 可只预览构建命令。此脚本构建 kblade MS18 的
-`prospector_ms18 scanner_display`，启用 `ms18-touch.conf` 中的触摸配置；
+`ZMK_TOUCH_WORKSPACE`。此脚本构建 kblade MS18 的 `prospector_ms18 scanner_display`，
+启用 `ms18-touch.conf` 中的触摸配置；
 脚本不刷写设备。固件输出为 workspace 下的
 `build-ms18-scanner/zephyr/zmk.uf2`。触摸配置目前仍需实机验证。
 

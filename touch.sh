@@ -9,31 +9,11 @@ export ZEPHYR_SDK_INSTALL_DIR="D:/zephyr-sdk-0.16.9"
 set -euo pipefail
 
 repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-workspace=
-dry_run=false
-
-case $# in
-  0) ;;
-  1)
-    if [[ $1 == --dry-run ]]; then
-      dry_run=true
-    else
-      workspace=$1
-    fi
-    ;;
-  2)
-    workspace=$1
-    [[ $2 == --dry-run ]] || {
-      echo "Usage: $0 [west-workspace] [--dry-run]" >&2
-      exit 2
-    }
-    dry_run=true
-    ;;
-  *)
-    echo "Usage: $0 [west-workspace] [--dry-run]" >&2
-    exit 2
-    ;;
-esac
+if [[ $# -gt 1 || ${1:-} == --* ]]; then
+  echo "Usage: $0 [west-workspace]" >&2
+  exit 2
+fi
+workspace=${1:-}
 
 if ! command -v west >/dev/null 2>&1; then
   echo "west is not installed or is not on PATH." >&2
@@ -65,9 +45,4 @@ fi
 export ZEPHYR_BASE="$workspace/zephyr"
 export Zephyr_DIR="$ZEPHYR_BASE/share/zephyr-package/cmake"
 
-args=("$workspace")
-if [[ $dry_run == true ]]; then
-  args+=(--dry-run)
-fi
-
-exec bash "$repo/scripts/build-ms18-scanner.sh" "${args[@]}"
+exec bash "$repo/scripts/build-ms18-scanner.sh" "$workspace"
