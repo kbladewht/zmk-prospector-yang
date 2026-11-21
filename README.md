@@ -115,6 +115,8 @@ DYA `display_theme=4` 选择新主题，原有 0–3 的含义保持不变。
 `prospector_ms18t scanner_display`，启用 `ms18-touch.conf` 中的触摸配置；
 脚本不刷写设备。固件输出为 workspace 下的
 `build-ms18t-scanner/zephyr/zmk.uf2`。触摸配置目前仍需实机验证。
+MS18 与 MS18T 的触摸说明分别见 [MS18](docs/MS18-TOUCH.md) 和
+[MS18T](docs/MS18T-TOUCH.md)。
 
 GitHub Actions 在 `kl-touch` 分支有提交时自动构建，也支持手动运行。
 
