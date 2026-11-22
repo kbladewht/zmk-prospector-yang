@@ -20,7 +20,7 @@
 #include "backlight_init.h"
 #include "brightness_control.h"
 #define SUBSYSTEM "dongle_display_settings"
-LOG_MODULE_REGISTER(dya_settings, CONFIG_ZMK_LOG_LEVEL);
+LOG_MODULE_REGISTER(dya_settings, LOG_LEVEL_INF);
 static struct zmk_rpc_custom_subsystem_meta display_meta = {
     ZMK_RPC_CUSTOM_SUBSYSTEM_UI_URLS(),
     .security = ZMK_STUDIO_RPC_HANDLER_UNSECURED,
@@ -52,6 +52,7 @@ static int32_t read_value(const struct zmk_custom_setting *setting, int32_t fall
 
 #if IS_ENABLED(CONFIG_PROSPECTOR_USE_AMBIENT_LIGHT_SENSOR)
 static uint32_t last_ambient_read_ms;
+static uint8_t ambient_brightness = 60;
 
 static void update_ambient_brightness(void) {
     if (!brightness_control_sensor_available()) return;
@@ -72,16 +73,11 @@ static void update_ambient_brightness(void) {
     uint8_t brightness = brightness_control_map_light_to_brightness(light_value);
     LOG_INF("APDS9960 light raw=%u, target brightness=%u%%",
             (uint32_t)light_value, (uint32_t)brightness);
-    int32_t current = read_value(&display_brightness, 60);
+    int32_t current = ambient_brightness;
     int32_t difference = brightness - current;
     if (difference > -2 && difference < 2) return;
 
-    ret = zmk_custom_setting_set_int32(
-        &display_brightness, brightness, ZMK_CUSTOM_SETTING_WRITE_MODE_MEMORY);
-    if (ret != 0) {
-        LOG_WRN("Could not apply ambient brightness: %d", ret);
-        return;
-    }
+    ambient_brightness = brightness;
     atomic_set(&dirty, 1);
 }
 #else
@@ -94,7 +90,12 @@ static void apply(lv_timer_t *timer) {
     if (!atomic_cas(&dirty, 1, 0)) return;
     int32_t theme = read_value(&display_theme, 0);
     int32_t palette = read_value(&display_palette, 0);
+#if IS_ENABLED(CONFIG_PROSPECTOR_USE_AMBIENT_LIGHT_SENSOR)
+    int32_t brightness = brightness_control_sensor_available()
+        ? ambient_brightness : read_value(&display_brightness, 60);
+#else
     int32_t brightness = read_value(&display_brightness, 60);
+#endif
     if (theme < 0 || theme > 11 || palette < 0 || palette > 3) return;
     prospector_layouts_set_style((prospector_layout_t)(theme + 1));
     uint8_t current = theme == 0 ? field_layout_get_palette() : theme == 1
@@ -167,7 +168,12 @@ int prospector_dya_gesture(int theme_step, int brightness_step) {
     }
     return err;
 }
-int prospector_dya_touch_get_brightness(void) { return read_value(&display_brightness, 60); }
+int prospector_dya_touch_get_brightness(void) {
+#if IS_ENABLED(CONFIG_PROSPECTOR_USE_AMBIENT_LIGHT_SENSOR)
+    if (brightness_control_sensor_available()) return ambient_brightness;
+#endif
+    return read_value(&display_brightness, 60);
+}
 void prospector_dya_touch_brightness(int value) {
     prospector_dya_gesture(0, value - read_value(&display_brightness, 60));
 }
