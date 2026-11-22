@@ -185,20 +185,20 @@
 };
 
 /* APDS9960 ambient-light sensor uses a separate, polled I2C bus.
- * P0.26 is SDA and P0.31 is SCL; no interrupt pin is required.
+ * P0.31 is SDA and P0.26 is SCL; no interrupt pin is required.
  */
 &pinctrl {
     i2c1_ambient_default: i2c1_ambient_default {
         group1 {
-            psels = <NRF_PSEL(TWIM_SDA, 0, 26)>,
-                    <NRF_PSEL(TWIM_SCL, 0, 31)>;
+            psels = <NRF_PSEL(TWIM_SDA, 0, 31)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 26)>;
         };
     };
 
     i2c1_ambient_sleep: i2c1_ambient_sleep {
         group1 {
-            psels = <NRF_PSEL(TWIM_SDA, 0, 26)>,
-                    <NRF_PSEL(TWIM_SCL, 0, 31)>;
+            psels = <NRF_PSEL(TWIM_SDA, 0, 31)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 26)>;
             low-power-enable;
         };
     };

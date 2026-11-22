@@ -21,8 +21,8 @@ APDS9960 ambient-light sensor wiring:
 
 | Signal | MCU pin |
 |---|---|
-| SDA | P0.26 |
-| SCL | P0.31 |
+| SDA | P0.31 |
+| SCL | P0.26 |
 
 The APDS9960 uses a separate I2C1 bus from the touch controller and is polled
 without an interrupt pin. Brightness is automatically adjusted when the sensor
