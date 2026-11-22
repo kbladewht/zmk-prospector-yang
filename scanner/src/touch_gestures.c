@@ -25,9 +25,8 @@ static bool pressed;
 static int64_t started, last_swipe;
 static lv_timer_t *timer;
 static atomic_t pointer_x, pointer_y, pointer_down;
-static lv_obj_t *menu, *slider, *brightness_value;
+static lv_obj_t *menu, *brightness_value;
 static int page; /* 0: themes, 1: main/navigation, 2: display settings */
-static bool dragging;
 static int64_t last_tap;
 
 static int32_t display_width(void) {
@@ -75,20 +74,9 @@ static void read_pointer(lv_indev_t *indev, lv_indev_data_t *data) {
     data->state = atomic_get(&pointer_down) ? LV_INDEV_STATE_PRESSED : LV_INDEV_STATE_RELEASED;
 }
 
-static void slider_event(lv_event_t *event) {
-    lv_event_code_t code = lv_event_get_code(event);
-    if (code == LV_EVENT_PRESSED) dragging = true;
-    if (code == LV_EVENT_RELEASED || code == LV_EVENT_PRESS_LOST) dragging = false;
-    if (code == LV_EVENT_VALUE_CHANGED) {
-        int value = lv_slider_get_value(slider);
-        prospector_dya_touch_brightness(value);
-        if (brightness_value) lv_label_set_text_fmt(brightness_value, "%d%%", value);
-    }
-}
-
 static void show_page(int next) {
     if (menu) lv_obj_delete(menu);
-    menu = NULL; slider = NULL; brightness_value = NULL; page = next; dragging = false;
+    menu = NULL; brightness_value = NULL; page = next;
     if (!page) return;
 
     const int32_t width = display_width();
@@ -141,39 +129,15 @@ static void show_page(int next) {
         create_label(themes, LV_SYMBOL_LEFT, content_width - 54, 18, 34,
                      lv_color_hex(UI_TEXT_MUTED), LV_TEXT_ALIGN_CENTER);
     } else {
-        brightness_value = create_label(menu, "", UI_MARGIN, 61, content_width,
+        create_label(menu, "AUTO BRIGHTNESS", UI_MARGIN, 55, content_width,
+                     lv_color_white(), LV_TEXT_ALIGN_CENTER);
+        brightness_value = create_label(menu, "", UI_MARGIN, 91, content_width,
                                         lv_color_hex(UI_ACCENT_COLOR), LV_TEXT_ALIGN_CENTER);
         lv_obj_set_style_text_font(brightness_value, &lv_font_montserrat_28, 0);
         lv_label_set_text_fmt(brightness_value, "%d%%", prospector_dya_touch_get_brightness());
 
-        slider = lv_slider_create(menu);
-        lv_obj_set_size(slider, content_width, 12);
-        lv_obj_align(slider, LV_ALIGN_TOP_MID, 0, 115);
-        lv_obj_set_style_radius(slider, LV_RADIUS_CIRCLE, LV_PART_MAIN);
-        lv_obj_set_style_bg_color(slider, lv_color_hex(0x3A424D), LV_PART_MAIN);
-        lv_obj_set_style_bg_opa(slider, LV_OPA_COVER, LV_PART_MAIN);
-        lv_obj_set_style_radius(slider, LV_RADIUS_CIRCLE, LV_PART_INDICATOR);
-        lv_obj_set_style_bg_color(slider, lv_color_hex(UI_ACCENT_COLOR), LV_PART_INDICATOR);
-        lv_obj_set_style_bg_opa(slider, LV_OPA_COVER, LV_PART_INDICATOR);
-        lv_obj_set_style_radius(slider, LV_RADIUS_CIRCLE, LV_PART_KNOB);
-        lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
-        lv_obj_set_style_bg_opa(slider, LV_OPA_COVER, LV_PART_KNOB);
-        lv_obj_set_style_pad_all(slider, 7, LV_PART_KNOB);
-        lv_obj_set_style_shadow_width(slider, 5, LV_PART_KNOB);
-        lv_obj_set_style_shadow_color(slider, lv_color_black(), LV_PART_KNOB);
-        lv_obj_set_style_shadow_opa(slider, LV_OPA_40, LV_PART_KNOB);
-        lv_obj_set_ext_click_area(slider, 18);
-        lv_slider_set_range(slider, 1, 100);
-        lv_slider_set_value(slider, prospector_dya_touch_get_brightness(), LV_ANIM_OFF);
-        lv_obj_add_event_cb(slider, slider_event, LV_EVENT_ALL, NULL);
-
-        create_label(menu, "1", UI_MARGIN, 139, 32,
-                     lv_color_hex(UI_TEXT_MUTED), LV_TEXT_ALIGN_LEFT);
-        create_label(menu, "100", width - UI_MARGIN - 44, 139, 44,
-                     lv_color_hex(UI_TEXT_MUTED), LV_TEXT_ALIGN_RIGHT);
-
         lv_obj_t *hint = create_label(menu, LV_SYMBOL_UP "  BACK TO CONTROL",
-                                      UI_MARGIN, 190, content_width,
+                                      UI_MARGIN, 170, content_width,
                                       lv_color_hex(UI_TEXT_MUTED), LV_TEXT_ALIGN_CENTER);
         lv_obj_set_style_text_font(hint, &lv_font_montserrat_16, 0);
     }
@@ -211,9 +175,11 @@ static void input_cb(struct input_event *event, void *unused) {
 INPUT_CALLBACK_DEFINE(DEVICE_DT_GET(TOUCH_NODE), input_cb, NULL);
 static void process(lv_timer_t *unused) {
     ARG_UNUSED(unused);
+    if (page == 2 && brightness_value)
+        lv_label_set_text_fmt(brightness_value, "%d%%", prospector_dya_touch_get_brightness());
+
     struct gesture gesture;
     while (!k_msgq_get(&gestures, &gesture, K_NO_WAIT)) {
-        if (dragging) continue;
         if (!page) {
             if (gesture.brightness > 0) show_page(1);
             else if (gesture.theme == 2) prospector_dya_touch_palette();

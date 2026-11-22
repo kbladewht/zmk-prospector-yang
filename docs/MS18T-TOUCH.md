@@ -25,14 +25,15 @@ APDS9960 ambient-light sensor wiring:
 | SCL | P0.31 |
 
 The APDS9960 uses a separate I2C1 bus from the touch controller and is polled
-without an interrupt pin. Automatic brightness starts when a sensor is detected;
-dragging the brightness slider switches to manual mode until the next reboot.
+without an interrupt pin. Brightness is automatically adjusted when the sensor
+is detected. The display page shows the current brightness; its manual slider is
+temporarily disabled for sensor testing.
 The sensor requires 3.3 V, GND, and I2C pull-ups (often present on the breakout).
 
 On the theme page, swipe down/up for next/previous theme (all twelve wrap).
 Double tap cycles palette on FIELD/OPERATOR/RADII. Swipe right opens a compact
-navigation page; swipe down opens brightness settings. Drag the slider to set
-1–100%; swipe up returns to navigation, then left returns to themes.
+navigation page; swipe down opens the automatic-brightness status. Swipe up
+returns to navigation, then left returns to themes.
 This port preserves scanner-mode's gesture directions and coordinate rotation.
 The overlay is laid out for the complete 280x240 landscape viewport: the
 navigation cards use symmetric 24-pixel margins, the brightness percentage and

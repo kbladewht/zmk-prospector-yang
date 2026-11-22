@@ -51,11 +51,10 @@ static int32_t read_value(const struct zmk_custom_setting *setting, int32_t fall
 }
 
 #if IS_ENABLED(CONFIG_PROSPECTOR_USE_AMBIENT_LIGHT_SENSOR)
-static bool auto_brightness_enabled = true;
 static uint32_t last_ambient_read_ms;
 
 static void update_ambient_brightness(void) {
-    if (!auto_brightness_enabled || !brightness_control_sensor_available()) return;
+    if (!brightness_control_sensor_available()) return;
 
     uint32_t now = k_uptime_get_32();
     if ((uint32_t)(now - last_ambient_read_ms) <
@@ -168,9 +167,6 @@ int prospector_dya_gesture(int theme_step, int brightness_step) {
 }
 int prospector_dya_touch_get_brightness(void) { return read_value(&display_brightness, 60); }
 void prospector_dya_touch_brightness(int value) {
-#if IS_ENABLED(CONFIG_PROSPECTOR_USE_AMBIENT_LIGHT_SENSOR)
-    auto_brightness_enabled = false;
-#endif
     prospector_dya_gesture(0, value - read_value(&display_brightness, 60));
 }
 void prospector_dya_touch_palette(void) {
