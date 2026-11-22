@@ -62,6 +62,8 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 // APDS9960 Chip IDs
 #define APDS9960_ID_1           0xAB
 #define APDS9960_ID_2           0x9C
+#define APDS9960_ID_3           0xA8
+#define APDS9960_ID_4           0x9E
 
 // APDS9960 ALS Gain values
 #define APDS9960_AGAIN_1X       0x00
@@ -110,7 +112,8 @@ static int apds9960_init_als(void) {
         return ret;
     }
 
-    if (chip_id != APDS9960_ID_1 && chip_id != APDS9960_ID_2) {
+    if (chip_id != APDS9960_ID_1 && chip_id != APDS9960_ID_2 &&
+        chip_id != APDS9960_ID_3 && chip_id != APDS9960_ID_4) {
         LOG_ERR("Invalid APDS9960 chip ID: 0x%02X", chip_id);
         return -ENODEV;
     }

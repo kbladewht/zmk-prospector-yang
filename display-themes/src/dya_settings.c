@@ -70,6 +70,8 @@ static void update_ambient_brightness(void) {
     }
 
     uint8_t brightness = brightness_control_map_light_to_brightness(light_value);
+    LOG_INF("APDS9960 light raw=%u, target brightness=%u%%",
+            (uint32_t)light_value, (uint32_t)brightness);
     int32_t current = read_value(&display_brightness, 60);
     int32_t difference = brightness - current;
     if (difference > -2 && difference < 2) return;

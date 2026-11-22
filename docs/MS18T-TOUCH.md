@@ -28,7 +28,9 @@ The APDS9960 uses a separate I2C1 bus from the touch controller and is polled
 without an interrupt pin. Brightness is automatically adjusted when the sensor
 is detected. The display page shows the current brightness; its manual slider is
 temporarily disabled for sensor testing.
-The sensor requires 3.3 V, GND, and I2C pull-ups (often present on the breakout).
+The serial log reports each successful raw sensor reading and its target
+brightness (default interval: two seconds). The sensor requires 3.3 V, GND, and
+I2C pull-ups (often present on the breakout).
 
 On the theme page, swipe down/up for next/previous theme (all twelve wrap).
 Double tap cycles palette on FIELD/OPERATOR/RADII. Swipe right opens a compact
